@@ -1,0 +1,120 @@
+#%RAML 1.0
+baseUri: https://anypoint.mulesoft.com/mocking/api/v1/links/008682b1-e593-4bbf-a606-fca38e95ee49/ # 
+version: v2
+title: Customers API
+
+
+types:
+  Customer: !include datatypes/CustomerDataType.raml
+
+traits:
+  server_auth_error_status:
+    responses:
+      500:
+        body:
+          application/json:
+            example:
+              message: Something went wrong. Try later.
+      401:
+        body:
+          application/json:
+            example:
+              message: Not authenticated.
+  bad_request_status:
+    responses:
+      400:
+        body:
+          application/json:
+            example:
+              message: Bad request.
+  cust_auth:
+    headers:
+      client_id:
+        type: string
+        required: true
+      client_secret:
+        type: string
+        required: true
+
+/customers:
+  is: [server_auth_error_status,cust_auth,bad_request_status]
+  get:
+    #headers:
+      #Content-Type:
+        #required: false
+        #example: application/json
+        #default: application/json
+    queryParameters:
+      city:
+        required: true
+        enum: [Bangalore, Chennai, Hyderabad]
+        #example: Bangalore  
+        type: string
+    responses:
+      200:
+        body:
+          application/json:
+            #examples: !include examples/CustomersExample.raml
+            type: Customer[]
+          #application/xml:
+            #example:
+            #type: 
+          #apllication/csv:
+            #example:
+            #type: 
+  post:
+    body:
+      application/json:
+        #examples: !include examples/CustomerExample.raml
+        type: Customer
+    responses:
+      201:
+        body:
+          application/json:
+            example: 
+              message: Customer has been added
+  /{customer_id}:
+    is: [server_auth_error_status,cust_auth]
+    get:
+      responses:
+        200:
+          body:
+            application/json:
+              #examples: !include examples/CustomerExample.raml
+              type: Customer
+    put:
+      is: [bad_request_status]
+      body:
+        application/json:
+          #examples: !include examples/CustomerExample.raml
+          type: Customer
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                message: Customer has been updated    
+    delete:
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                message: Customer has been deleted
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
